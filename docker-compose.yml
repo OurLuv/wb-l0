@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: wbl0
+    ports:
+      - 5432:5432
+    container_name: postgres-1
+  nats:
+    image: nats-streaming:latest
+    container_name: nats
+    ports:
+      - "4222:4222"
+    environment:
+      - STAN_CLUSTER_ID=my_cluster
+    command: ["--cluster_id=my_cluster"]
