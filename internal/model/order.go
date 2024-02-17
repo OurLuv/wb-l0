@@ -3,18 +3,18 @@ package model
 import (
 	"time"
 
-	uuid "github.com/jackc/pgx/pgtype/ext/gofrs-uuid"
+	uuid "github.com/google/uuid"
 )
 
 type Order struct {
-	OrderUID          uuid.UUID `json:"order_uid"`
+	OrderUUID         uuid.UUID `json:"order_uid"`
 	TrackNumber       string    `json:"track_number"`
 	Entry             string    `json:"entry"`
 	Delivery          Delivery  `json:"delivery"`
 	Payment           Payment   `json:"payment"`
 	Items             []Item    `json:"items"`
 	Locale            string    `json:"locale"`
-	InternalSignature *string   `json:"internal_signature"`
+	InternalSignature string    `json:"internal_signature"`
 	CustomerID        string    `json:"customer_id"`
 	DeliveryService   string    `json:"delivery_service"`
 	ShardKey          string    `json:"shard_key"`
