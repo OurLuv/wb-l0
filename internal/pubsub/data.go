@@ -108,7 +108,7 @@ func randomEmail() string {
 func randomPhone() string {
 	p := "+"
 	for i := 0; i < 11; i++ {
-		p += strconv.Itoa(randomInt(9, 0))
+		p += strconv.Itoa(randomInt(0, 9))
 	}
 	return p
 }

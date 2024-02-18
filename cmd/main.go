@@ -8,15 +8,18 @@ import (
 )
 
 func main() {
+	// connecting to nats streaming
 	sc, err := stan.Connect("my_cluster", "cl1", stan.NatsURL("nats://localhost:4222"))
-
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer sc.Close()
+
+	// creating and starting new subscriber
+	s := pubsub.NewSubscriber(sc)
+	s.Start()
+	// creating and starting new subscriber
 	p := pubsub.NewPublisher(sc)
 	p.Start()
 
-	s := pubsub.NewSubscriber(sc)
-	s.Start()
 }
