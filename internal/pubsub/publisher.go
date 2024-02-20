@@ -16,12 +16,12 @@ type Publisher struct {
 func (p *Publisher) Start() error {
 	//defer p.sc.Close()
 	for {
-		data, err := json.Marshal(randomOrder())
+		data, err := json.Marshal(RandomOrder())
 		if err != nil {
 			return fmt.Errorf("publisher: cannot marshal msg to json")
 		}
 		p.sc.Publish("test1", data)
-		time.Sleep(1 * time.Second)
+		time.Sleep(5 * time.Second)
 		log.Print("Publisher send the message")
 	}
 }

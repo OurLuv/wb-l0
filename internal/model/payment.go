@@ -3,7 +3,7 @@ package model
 import "github.com/google/uuid"
 
 type Payment struct {
-	//Id           int
+	Id           int
 	Transaction  uuid.UUID `json:"transaction"`
 	RequestID    string    `json:"request_id"`
 	Currency     string    `json:"currency"`

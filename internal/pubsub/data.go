@@ -9,7 +9,7 @@ import (
 	uuid "github.com/google/uuid"
 )
 
-func randomOrder() model.Order {
+func RandomOrder() model.Order {
 	tn := "WBILM" + randomString(7)
 	order := model.Order{
 		OrderUUID:         uuid.UUID{},

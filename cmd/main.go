@@ -22,14 +22,11 @@ func main() {
 	s.Start()
 	// creating and starting new subscriber
 	p := pubsub.NewPublisher(sc)
+	_ = p
 	p.Start()
 
 	//* storage
-	dbPath, exists := os.LookupEnv("DB_PATH")
-	if !exists {
-		log.Printf("db path is not set: %s", dbPath)
-	}
-	pool, err := postgres.NewPool("")
+	pool, err := postgres.NewPool("postgres://postgres:admin@localhost:5432/wbl0")
 	if err != nil {
 		log.Printf("failed to init storage: %s", err)
 		os.Exit(1)

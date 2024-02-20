@@ -8,8 +8,6 @@ import (
 )
 
 type OrderServcie interface {
-	CreateInDataBase(order model.Order) error
-	CreateInCache(order model.Order) error
 	Save(order model.Order) error
 	GetById(id uuid.UUID) (*model.Order, error)
 	GetByIdCache(id uuid.UUID) (*model.Order, error)
