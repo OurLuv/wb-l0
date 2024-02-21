@@ -8,31 +8,51 @@ import (
 )
 
 type OrderServcie interface {
-	Save(order model.Order) error
-	GetById(id uuid.UUID) (*model.Order, error)
+	Save(model.Order) error
+	GetById(string) (*model.Order, error)
 	GetByIdCache(id uuid.UUID) (*model.Order, error)
 }
 
 type Order struct {
 	repo  postgres.OrderStorage
-	cache cache.OrderCache
+	cache cache.OrderCacheInterface
 }
 
-func (o *Order) Save(order model.Order) error {
+func (o *Order) Save(order model.Order) (string, error) {
 	// saving in database
-	err := o.repo.Create(order)
+	orderFullInfo, err := o.repo.Create(order)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	//saving in cache
-	o.cache.Put(order)
+	o.cache.Put(*orderFullInfo)
 
-	return nil
+	return orderFullInfo.OrderUUID.String(), nil
 }
 
-func New(repo postgres.OrderStorage) *Order {
+func (o *Order) GetById(uuidStr string) (*model.Order, error) {
+	//parsing
+	uuid, err := uuid.Parse(uuidStr)
+	if err != nil {
+		return nil, err
+	}
+
+	//getting order from cache
+	order, err := o.cache.Get(uuid)
+	if err != nil {
+		return nil, err
+	}
+	return order, nil
+}
+
+func (o *Order) GetByIdCache(id uuid.UUID) (*model.Order, error) {
+	return nil, nil
+}
+
+func New(repo postgres.OrderStorage, cache cache.OrderCacheInterface) *Order {
 	return &Order{
-		repo: repo,
+		repo:  repo,
+		cache: cache,
 	}
 }

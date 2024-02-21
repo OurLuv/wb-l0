@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/OurLuv/l0/internal/model"
@@ -17,8 +18,16 @@ type OrderCache struct {
 	store sync.Map
 }
 
-func (oc *OrderCache) Get(uuid.UUID) (*model.Order, error) {
-	return nil, nil
+func (oc *OrderCache) Get(uuid uuid.UUID) (*model.Order, error) {
+	v, ok := oc.store.Load(uuid)
+	res, ok1 := v.(model.Order)
+	if !ok1 {
+		return nil, fmt.Errorf("Error in cache")
+	}
+	if !ok {
+		return nil, fmt.Errorf("This is no order with this uuid")
+	}
+	return &res, nil
 }
 
 func (oc *OrderCache) Put(order model.Order) {
@@ -27,4 +36,8 @@ func (oc *OrderCache) Put(order model.Order) {
 
 func (oc *OrderCache) Recover([]model.Order) {
 	// todo finish it
+}
+
+func New() *OrderCache {
+	return &OrderCache{}
 }

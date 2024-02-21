@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/OurLuv/l0/internal/model"
 	"github.com/OurLuv/l0/internal/pubsub"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -29,7 +30,10 @@ func TestMain(m *testing.M) {
 func TestOrderCreate(t *testing.T) {
 	or := NewOrderRepository(pool)
 	order := pubsub.RandomOrder()
-	if err := or.Create(order); err != nil {
+	var o *model.Order
+	var err error
+	if o, err = or.Create(order); err != nil {
+		_ = o
 		t.Errorf("Error: %s", err)
 	}
 }
