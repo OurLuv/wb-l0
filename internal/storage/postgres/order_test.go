@@ -37,3 +37,13 @@ func TestOrderCreate(t *testing.T) {
 		t.Errorf("Error: %s", err)
 	}
 }
+
+func TestOrderGetAll(t *testing.T) {
+	or := NewOrderRepository(pool)
+	var orders []model.Order
+	var err error
+	if orders, err = or.GetAll(); err != nil {
+		_ = orders
+		t.Errorf("Error: %s", err)
+	}
+}

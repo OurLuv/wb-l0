@@ -34,8 +34,10 @@ func (oc *OrderCache) Put(order model.Order) {
 	oc.store.Store(order.OrderUUID, order)
 }
 
-func (oc *OrderCache) Recover([]model.Order) {
-	// todo finish it
+func (oc *OrderCache) Recover(orders []model.Order) {
+	for i := range orders {
+		oc.store.Store(orders[i].OrderUUID, orders[i])
+	}
 }
 
 func New() *OrderCache {

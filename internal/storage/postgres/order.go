@@ -10,7 +10,7 @@ import (
 
 type OrderStorage interface {
 	Create(model.Order) (*model.Order, error)
-	GetAll() []model.Order
+	GetAll() ([]model.Order, error)
 }
 
 type OrderRepository struct {
@@ -76,8 +76,101 @@ func (or *OrderRepository) Create(order model.Order) (*model.Order, error) {
 	return &order, nil
 }
 
-func (or *OrderRepository) GetAll() []model.Order {
-	return nil
+// todo: finish item's sql
+func (or *OrderRepository) GetAll() ([]model.Order, error) {
+	var order model.Order
+	orders := []model.Order{}
+
+	tx, err := or.pool.BeginTx(context.TODO(), pgx.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(context.TODO())
+		} else {
+			tx.Commit(context.TODO())
+		}
+	}()
+	query := "SELECT * from orders o join delivery d on o.delivery_id = d.id join payment p on o.payment_id = p.id"
+	rows, err := tx.Query(context.Background(), query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		err := rows.Scan(
+			&order.OrderUUID,
+			&order.TrackNumber,
+			&order.Entry,
+			&order.Delivery.Id,
+			&order.Payment.Id,
+			&order.Locale,
+			&order.InternalSignature,
+			&order.CustomerID,
+			&order.DeliveryService,
+			&order.ShardKey,
+			&order.SmID,
+			&order.DateCreated,
+			&order.OofShard,
+			&order.Delivery.Id,
+			&order.Delivery.Name,
+			&order.Delivery.Phone,
+			&order.Delivery.Zip,
+			&order.Delivery.City,
+			&order.Delivery.Address,
+			&order.Delivery.Region,
+			&order.Delivery.Email,
+			&order.Payment.Transaction,
+			&order.Payment.RequestID,
+			&order.Payment.Currency,
+			&order.Payment.Provider,
+			&order.Payment.Amount,
+			&order.Payment.PaymentDate,
+			&order.Payment.Bank,
+			&order.Payment.DeliveryCost,
+			&order.Payment.GoodsTotal,
+			&order.Payment.CustomFee,
+			&order.Payment.Id)
+		if err != nil {
+			return nil, err
+		}
+		orders = append(orders, order)
+	}
+
+	//fetch items
+	for i := range orders {
+		items := []model.Item{}
+		itemsQuery := "SELECT id, chrt_id, track_number, price, rid, i.name, sale, size, total_price, nm_id, brand, i.status from items i " +
+			"LEFT JOIN orders_items oi ON i.id = oi.item_id " +
+			"WHERE oi.order_uuid = $1"
+		itemRows, err := tx.Query(context.Background(), itemsQuery, orders[i].OrderUUID)
+		if err != nil {
+			return nil, err
+		}
+		for itemRows.Next() {
+			var item model.Item
+			err := itemRows.Scan(
+				&item.Id,
+				&item.ChrtId,
+				&item.TrackNumber,
+				&item.Price,
+				&item.RID,
+				&item.Name,
+				&item.Sale,
+				&item.Size,
+				&item.TotalPrice,
+				&item.NmID,
+				&item.Brand,
+				&item.Status,
+			)
+			if err != nil {
+				return nil, err
+			}
+			items = append(items, item)
+		}
+		orders[i].Items = items
+	}
+	return orders, nil
 }
 
 func NewOrderRepository(pool *pgxpool.Pool) *OrderRepository {

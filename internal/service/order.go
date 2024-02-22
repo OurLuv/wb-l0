@@ -10,7 +10,7 @@ import (
 type OrderServcie interface {
 	Save(model.Order) error
 	GetById(string) (*model.Order, error)
-	GetByIdCache(id uuid.UUID) (*model.Order, error)
+	Pull() error
 }
 
 type Order struct {
@@ -46,8 +46,15 @@ func (o *Order) GetById(uuidStr string) (*model.Order, error) {
 	return order, nil
 }
 
-func (o *Order) GetByIdCache(id uuid.UUID) (*model.Order, error) {
-	return nil, nil
+func (o *Order) Pull() error {
+	orders, err := o.repo.GetAll()
+	if err != nil {
+		return err
+	}
+
+	o.cache.Recover(orders)
+
+	return nil
 }
 
 func New(repo postgres.OrderStorage, cache cache.OrderCacheInterface) *Order {
