@@ -8,7 +8,7 @@ import (
 )
 
 type OrderServcie interface {
-	Save(model.Order) error
+	Save(model.Order) (string, error)
 	GetById(string) (*model.Order, error)
 	Pull() error
 }

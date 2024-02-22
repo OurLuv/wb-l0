@@ -2,7 +2,6 @@ package pubsub
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"time"
 
@@ -14,20 +13,22 @@ type Publisher struct {
 }
 
 func (p *Publisher) Start() error {
-	//defer p.sc.Close()
 	for {
-		data, err := json.Marshal(RandomOrder())
-		if err != nil {
-			return fmt.Errorf("publisher: cannot marshal msg to json")
-		}
-		p.sc.Publish("test1", data)
-		time.Sleep(5 * time.Second)
-		log.Print("Publisher send the message")
+		p.SendMessage()
 	}
 }
 
 func (p *Publisher) SendMessage() error {
-
+	data, err := json.Marshal(RandomOrder())
+	if err != nil {
+		return err
+	}
+	err = p.sc.Publish("test1", data)
+	if err != nil {
+		log.Printf("Error publishing message: %v", err)
+	}
+	time.Sleep(20 * time.Second)
+	log.Print("Publisher send the message")
 	return nil
 }
 

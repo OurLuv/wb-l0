@@ -1,4 +1,4 @@
-package postgres
+package postgres_test
 
 import (
 	"flag"
@@ -8,6 +8,7 @@ import (
 
 	"github.com/OurLuv/l0/internal/model"
 	"github.com/OurLuv/l0/internal/pubsub"
+	"github.com/OurLuv/l0/internal/storage/postgres"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -15,7 +16,7 @@ var pool *pgxpool.Pool
 
 func TestMain(m *testing.M) {
 	var err error
-	pool, err = NewPool("postgres://postgres:admin@localhost:5432/wbl0")
+	pool, err = postgres.NewPool("postgres://postgres:admin@localhost:5432/wbl0")
 	if err != nil {
 		log.Printf("failed to init storage: %s", err)
 		os.Exit(1)
@@ -28,7 +29,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestOrderCreate(t *testing.T) {
-	or := NewOrderRepository(pool)
+	or := postgres.NewOrderRepository(pool)
 	order := pubsub.RandomOrder()
 	var o *model.Order
 	var err error
@@ -39,7 +40,7 @@ func TestOrderCreate(t *testing.T) {
 }
 
 func TestOrderGetAll(t *testing.T) {
-	or := NewOrderRepository(pool)
+	or := postgres.NewOrderRepository(pool)
 	var orders []model.Order
 	var err error
 	if orders, err = or.GetAll(); err != nil {

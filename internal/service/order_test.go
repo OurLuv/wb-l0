@@ -1,4 +1,4 @@
-package service
+package service_test
 
 import (
 	"flag"
@@ -7,11 +7,12 @@ import (
 	"testing"
 
 	"github.com/OurLuv/l0/internal/pubsub"
+	"github.com/OurLuv/l0/internal/service"
 	"github.com/OurLuv/l0/internal/storage/cache"
 	"github.com/OurLuv/l0/internal/storage/postgres"
 )
 
-var s *Order
+var s *service.Order
 
 func TestMain(m *testing.M) {
 	// storage
@@ -29,7 +30,7 @@ func TestMain(m *testing.M) {
 	cache := cache.New()
 
 	//service
-	s = New(repo, cache)
+	s = service.New(repo, cache)
 
 	flag.Parse()
 	exitCode := m.Run()
