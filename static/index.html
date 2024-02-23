@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .container{
+            display: flex;
+            flex-direction: column;
+            padding: 100px 0;
+            align-items: center;
+        }
+        form{
+            display: flex;
+            flex-direction: column;
+        }
+        .uuid{
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #000;
+            border-radius: 10px;
+            width: 400px;
+            margin: 20px 0;
+            outline: none;
+        }
+        .btn{
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #000;
+            border-radius: 10px;
+            width: 100px;
+            cursor: pointer;
+        }
+        .result{
+            margin-top: 40px;
+        }
+        .err{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form action="" onsubmit="return false">
+            <h1>Enter the UUID</h1>
+            <input type="text" class="uuid" placeholder="47e6fcd1-762f-4e49-9954-73239f3ec312">
+            <button class="btn">Look up</button>
+        </form>
+        <div class="result">
+            <h2 class="err">No result</h2>
+            <pre class="json"></pre>
+        </div>
+    </div>
+    <script>
+        let btn = document.querySelector(".btn")
+        let json = document.querySelector(".json")
+        let err = document.querySelector(".err")
+        btn.addEventListener("click", function(){
+            json.innerHTML = ""
+            err.style.display="none"
+            let uuid = document.querySelector(".uuid")
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://localhost:8080/orders/" + uuid.value, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    json.innerHTML = JSON.stringify(response, null, 2);
+                    console.log(response); // Вывод полученного JSON
+                }
+                if (xhr.readyState === 4 && xhr.status === 400) {
+                    var response = JSON.parse(xhr.responseText);
+                    err.style.display="flex"
+                    console.log(response); // Вывод полученного JSON
+                }
+            };
+        xhr.send();
+        })
+    </script>
+</body>
+</html>

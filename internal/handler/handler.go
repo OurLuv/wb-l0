@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/OurLuv/l0/internal/model"
 	"github.com/OurLuv/l0/internal/service"
 	"github.com/gorilla/mux"
 )
@@ -14,13 +13,12 @@ type Handler struct {
 }
 
 type Message struct {
-	Error string      `json:"error,omitempty"`
-	Order model.Order `json:"order,omitempty"`
+	Error string `json:"error,omitempty"`
 }
 
 func (h *Handler) InitRoutes() *mux.Router {
 	r := mux.NewRouter()
-	r.HandleFunc("", h.ViewMain).Methods("GET")
+	r.HandleFunc("/orders", h.ViewMain).Methods("GET")
 	r.HandleFunc("/orders/{id}", h.GetOrderById).Methods("GET")
 
 	return r
