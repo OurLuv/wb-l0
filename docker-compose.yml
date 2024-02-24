@@ -8,6 +8,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: wbl0
+    volumes:
+    - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - 5432:5432
     container_name: postgres-1
